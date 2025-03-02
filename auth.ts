@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 import Line from "next-auth/providers/line"
+import Instagram from "next-auth/providers/instagram"
  
 export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
@@ -9,5 +10,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return !!auth
     },
   },
-  providers: [Google, Line],
+  providers: [Google, Line, Instagram],
 })
