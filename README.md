@@ -114,3 +114,11 @@ Empower small businesses worldwide by providing an **easy-to-use** yet **powerfu
 ## Repository
 **GitHub Link:** [Coming Soon]
 
+---
+
+## reference
+
+- [cline](https://github.com/cline/cline)
+- [devin](https://devin.ai)
+- [mastra](https://mastra.ai)
+
