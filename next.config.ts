@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  basePath: "",
 };
 
 export default nextConfig;

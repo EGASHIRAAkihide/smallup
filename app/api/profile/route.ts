@@ -1,0 +1,37 @@
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export async function GET(req: NextRequest) {
+  const session = await auth();
+
+  if (!session || !session.user) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email || "" },
+  });
+
+  return NextResponse.json(user);
+}
+
+// ユーザー情報を更新 (PUT)
+export async function PUT(req: NextRequest) {
+  const session = await auth();
+
+  if (!session || !session.user) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const { name, bio, image } = await req.json();
+
+  const updatedUser = await prisma.user.update({
+    where: { email: session.user.email || "" },
+    data: { name, bio, image },
+  });
+
+  return NextResponse.json(updatedUser);
+}
