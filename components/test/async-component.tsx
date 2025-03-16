@@ -16,7 +16,7 @@ export async function AsyncComponent() {
         <div>{user.name}</div>
         {user.image && (
           <div className="relative w-12 h-12">
-            <Image src={user.image} alt={user.name || 'name'} sizes="100vw" fill />
+            <Image src={user.image} alt={user.name || 'name'} width={50} height={50} />
           </div>
         )}
       </div>
