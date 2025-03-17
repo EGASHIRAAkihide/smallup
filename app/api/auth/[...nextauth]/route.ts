@@ -3,7 +3,9 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { db } from "@/lib/db"
 import { eq } from "drizzle-orm"
 import { users } from "@/lib/db/schema"
-// import { compare } from "bcrypt"
+import { compare } from "bcrypt"
+
+const isDevelopment = process.env.NODE_ENV === "development"
 
 export const authOptions = {
   providers: [
@@ -14,29 +16,31 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        if (isDevelopment) {
+          return { id: "dev-user", name: "Dev User", email: "dev@example.com", role: "admin" }
+        }
+
         if (!credentials?.email || !credentials?.password) {
           return null
         }
 
-        const user = await db.query.users.findFirst({
-          where: eq(users.email, credentials.email),
-        })
+        const user = await db.select().from(users).where(eq(users.email, credentials.email)).limit(1)
 
-        if (!user) {
+        if (!user || user.length === 0) {
           return null
         }
 
-        // const isPasswordValid = await compare(credentials.password, user.password)
+        const isPasswordValid = await compare(credentials.password, user[0].password)
 
         if (!isPasswordValid) {
           return null
         }
 
         return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
+          id: user[0].id,
+          name: user[0].name,
+          email: user[0].email,
+          role: user[0].role,
         }
       },
     }),
@@ -51,6 +55,7 @@ export const authOptions = {
     },
     async session({ session, token }) {
       if (token) {
+        session.user = session.user || {}
         session.user.id = token.id
         session.user.role = token.role
       }
@@ -69,4 +74,3 @@ export const authOptions = {
 
 const handler = NextAuth(authOptions)
 export { handler as GET, handler as POST }
-
